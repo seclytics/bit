@@ -94,14 +94,12 @@ def sanitize_tx_data(unspents, outputs, fee, leftover, combine=True, message=Non
     if not unspents:
         raise ValueError('Transactions must have at least one unspent.')
 
-    # Temporary storage so all outputs precede messages.
     messages = []
-
     if message:
-        message_chunks = chunk_data(message.encode('utf-8'), MESSAGE_LIMIT)
-
-        for message in message_chunks:
-            messages.append((message, 0))
+        if type(message) == int:
+            messages.append((int_to_unknown_bytes(message), 0))
+        else:
+            messages.append((hex_to_bytes(message), 0))
 
     # Include return address in output count.
     num_outputs = len(outputs) + len(messages) + 1
